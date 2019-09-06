@@ -1,0 +1,13 @@
+﻿  cl : Ligne de commande warning D9035 : l'option 'Gm' est déconseillée et sera supprimée dans une version ultérieure
+  MinersWifeOwnedStates.cpp
+  MinersWife.cpp
+  MinerOwnedStates.cpp
+  Miner.cpp
+  MessageDispatcher.cpp
+  main.cpp
+  EntityManager.cpp
+  BaseGameEntity.cpp
+  CrudeTimer.cpp
+  Génération de code en cours...
+CrudeTimer.obj : warning LNK4075: ' /EDITANDCONTINUE' ignoré à cause de la spécification '/SAFESEH'
+  WestWorldWithMessaging.vcxproj -> D:\Bureau\Cours\UQAC\Projets\IAWestWorld\WestWorldWithMessaging\.\Debug\WestWorldWithMessaging.exe
