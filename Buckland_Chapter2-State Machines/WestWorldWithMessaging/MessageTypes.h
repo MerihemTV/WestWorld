@@ -14,11 +14,11 @@ inline std::string MsgToStr(int msg)
 {
   switch (msg)
   {
-  case 1:
+  case 0:
     
     return "HiHoneyImHome"; 
 
-  case 2:
+  case 1:
     
     return "StewReady";
 

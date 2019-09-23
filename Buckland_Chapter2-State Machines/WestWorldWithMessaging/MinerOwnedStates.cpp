@@ -111,7 +111,7 @@ void VisitBankAndDepositGold::Execute(Miner* pMiner)
        << "Depositing gold. Total savings now: "<< pMiner->Wealth();
 
   //wealthy enough to have a well earned rest?
-  if (pMiner->Wealth() >= ComfortLevel)
+  if (pMiner->Wealth() >= pMiner->GetComfortLevel())
   {
     cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " 
          << "WooHoo! Rich enough for now. Back home to mah li'lle lady";
@@ -149,11 +149,11 @@ GoHomeAndSleepTilRested* GoHomeAndSleepTilRested::Instance()
 
 void GoHomeAndSleepTilRested::Enter(Miner* pMiner)
 {
-  if (pMiner->Location() != shack)
+  if (pMiner->Location() != MinersShack)
   {
     cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Walkin' home";
 
-    pMiner->ChangeLocation(shack); 
+    pMiner->ChangeLocation(MinersShack); 
 
     //let the wife know I'm home
     Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay

@@ -4,7 +4,8 @@
 
 enum location_type
 {
-  shack,
+  MinersShack,
+  DrunkardsShack,
   goldmine,
   bank,
   saloon

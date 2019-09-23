@@ -22,14 +22,7 @@
 template <class entity_type> class State;
 struct Telegram;
 
-//the amount of gold a miner must have before he feels he can go home
-const int ComfortLevel       = 5;
-//the amount of nuggets a miner can carry
-const int MaxNuggets         = 3;
-//above this value a miner is thirsty
-const int ThirstLevel        = 5;
-//above this value a miner is sleepy
-const int TirednessThreshold = 5;
+
 
 
 
@@ -53,9 +46,18 @@ private:
   //the higher the value, the more tired the miner
   int                   m_iFatigue;
 
+  //the amount of gold a miner must have before he feels he can go home
+  const int ComfortLevel = 5;
+  //the amount of nuggets a miner can carry
+  const int MaxNuggets = 3;
+  //above this value a miner is thirsty
+  const int ThirstLevel = 5;
+  //above this value a miner is sleepy
+  const int TirednessThreshold = 5;
+
 public:
 
-  Miner(int id):m_Location(shack),
+  Miner(int id):m_Location(MinersShack),
                           m_iGoldCarried(0),
                           m_iMoneyInBank(0),
                           m_iThirst(0),
@@ -100,6 +102,8 @@ public:
   int           Wealth()const{return m_iMoneyInBank;}
   void          SetWealth(int val){m_iMoneyInBank = val;}
   void          AddToWealth(int val);
+
+  int			GetComfortLevel() { return ComfortLevel; }
 
   bool          Thirsty()const; 
   void          BuyAndDrinkAWhiskey(){m_iThirst = 0; m_iMoneyInBank-=2;}
