@@ -274,6 +274,25 @@ bool QuenchThirst::OnMessage(Miner* pMiner, const Telegram& msg)
 
 		pMiner->GetFSM()->ChangeState(Fighting::Instance());
 
+		Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
+			pMiner->ID(),        //ID of sender
+			ent_Drunkard,          //ID of recipient
+			Msg_LetsFight,			//the message
+			NO_ADDITIONAL_INFO);
+
+		return true;
+
+	case Msg_LetsFight:
+
+		cout << "\nMessage handled by " << GetNameOfEntity(pMiner->ID())
+			<< " at time: " << Clock->GetCurrentTime();
+
+		SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+
+		cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
+			<< "*HIC!* Heya ! I saw ya lookin' at me the wrong way !";
+		pMiner->GetFSM()->ChangeState(Fighting::Instance());
+
 		return true;
 
 	}//end switch

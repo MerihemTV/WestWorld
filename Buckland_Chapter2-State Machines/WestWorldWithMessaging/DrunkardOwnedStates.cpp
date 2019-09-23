@@ -182,6 +182,25 @@ bool Drunk::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 			<< "*HIC!* Heya ! I saw ya lookin' at me the wrong way !";
 		pDrunkard->GetFSM()->ChangeState(Brawling::Instance());
 
+		Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
+			pDrunkard->ID(),        //ID of sender
+			ent_Miner_Bob,          //ID of recipient
+			Msg_LetsFight,			//the message
+			NO_ADDITIONAL_INFO);
+
+		return true;
+
+	case Msg_LetsFight:
+
+		cout << "\nMessage handled by " << GetNameOfEntity(pDrunkard->ID())
+			<< " at time: " << Clock->GetCurrentTime();
+
+		SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+
+		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
+			<< "*HIC!* Heya ! I saw ya lookin' at me the wrong way !";
+		pDrunkard->GetFSM()->ChangeState(Brawling::Instance());
+
 		return true;
 	
 	}//end switch
