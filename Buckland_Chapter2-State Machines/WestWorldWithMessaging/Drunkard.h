@@ -47,7 +47,7 @@ public:
 		//set up state machine
 		m_pStateMachine = new StateMachine<Drunkard>(this);
 
-		m_pStateMachine->SetCurrentState(GoHomeAndSleepStillRested::Instance());
+		m_pStateMachine->SetCurrentState(GoHomeAndSleepIilRested::Instance());
 	}
 
 	~Drunkard() { delete m_pStateMachine; }

@@ -30,19 +30,19 @@ int main()
   MinersWife* Elsa = new MinersWife(ent_Elsa);
 
   //create a drunkard
-  //Drunkard* drunkard = new Drunkard(ent_Drunkard);
+  Drunkard* drunkard = new Drunkard(ent_Drunkard);
 
   //register them with the entity manager
   EntityMgr->RegisterEntity(Bob);
   EntityMgr->RegisterEntity(Elsa);
-  //EntityMgr->RegisterEntity(drunkard);
+  EntityMgr->RegisterEntity(drunkard);
 
   //run Bob and Elsa through a few Update calls
   for (int i=0; i<30; ++i)
   { 
     Bob->Update();
     Elsa->Update();
-	//drunkard->Update();
+	drunkard->Update();
 
     //dispatch any delayed messages
     Dispatch->DispatchDelayedMessages();
@@ -53,7 +53,7 @@ int main()
   //tidy up
   delete Bob;
   delete Elsa;
-  //delete drunkard;
+  delete drunkard;
 
   //wait for a keypress before exiting
   PressAnyKeyToContinue();

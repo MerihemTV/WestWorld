@@ -231,6 +231,13 @@ void QuenchThirst::Enter(Miner* pMiner)
 
     cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Boy, ah sure is thusty! Walking to the saloon";
   }
+
+  //let the drunkard know Bob is in the saloon
+  Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
+	  pMiner->ID(),				  //ID of sender
+	  ent_Drunkard,				  //ID of recipient
+	  Msg_HiDrunkardImAtSaloon,   //the message
+	  NO_ADDITIONAL_INFO);
 }
 
 void QuenchThirst::Execute(Miner* pMiner)
@@ -251,8 +258,27 @@ void QuenchThirst::Exit(Miner* pMiner)
 
 bool QuenchThirst::OnMessage(Miner* pMiner, const Telegram& msg)
 {
-  //send msg to global message handler
-  return false;
+	SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+
+	switch (msg.Msg)
+	{
+	case Msg_DrunkardDrunk:
+
+		cout << "\nMessage handled by " << GetNameOfEntity(pMiner->ID())
+			<< " at time: " << Clock->GetCurrentTime();
+
+		SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+
+		cout << "\n" << GetNameOfEntity(pMiner->ID())
+			<< ": Cmon drunkar, am waitin fer yah' !";
+
+		pMiner->GetFSM()->ChangeState(Fighting::Instance());
+
+		return true;
+
+	}//end switch
+
+	return false; //send message to global message handler
 }
 
 //------------------------------------------------------------------------EatStew
@@ -287,6 +313,58 @@ bool EatStew::OnMessage(Miner* pMiner, const Telegram& msg)
 {
   //send msg to global message handler
   return false;
+}
+
+
+
+//------------------------------------------------------------------------methods for Brawling
+
+Fighting* Fighting::Instance()
+{
+	static Fighting instance;
+
+	return &instance;
+}
+
+void Fighting::Enter(Miner* pMiner)
+{
+	cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
+		<< "You have no idea who're you're messing with !";
+}
+
+void Fighting::Execute(Miner* pMiner)
+{
+	//do smth ?
+}
+
+void Fighting::Exit(Miner* pMiner)
+{
+}
+
+
+bool Fighting::OnMessage(Miner* pMiner, const Telegram& msg)
+{
+	/*SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+
+	switch (msg.Msg)
+	{
+	case Msg_StewReady:
+
+		cout << "\nMessage handled by " << GetNameOfEntity(pDrunkard->ID())
+			<< " at time: " << Clock->GetCurrentTime();
+
+		SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+
+		cout << "\n" << GetNameOfEntity(pDrunkard->ID())
+			<< ": Okay Hun, ahm a comin'!";
+
+		//pDrunkard->GetFSM()->ChangeState(EatStew::Instance());
+
+		return true;
+
+	}//end switch*/
+
+	return false; //send message to global message handler
 }
 
 

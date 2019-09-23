@@ -22,14 +22,14 @@ extern std::ofstream os;
 
 //------------------------------------------------------------------------methods for GoHomeAndSleepStillRested
 
-GoHomeAndSleepStillRested* GoHomeAndSleepStillRested::Instance()
+GoHomeAndSleepIilRested* GoHomeAndSleepIilRested::Instance()
 {
-	static GoHomeAndSleepStillRested instance;
+	static GoHomeAndSleepIilRested instance;
 
 	return &instance;
 }
 
-void GoHomeAndSleepStillRested::Enter(Drunkard* pDrunkard)
+void GoHomeAndSleepIilRested::Enter(Drunkard* pDrunkard)
 {
 	if (pDrunkard->Location() != DrunkardsShack)
 	{
@@ -41,60 +41,58 @@ void GoHomeAndSleepStillRested::Enter(Drunkard* pDrunkard)
 	}
 }
 
-void GoHomeAndSleepStillRested::Execute(Drunkard* pDrunkard)
+void GoHomeAndSleepIilRested::Execute(Drunkard* pDrunkard)
 {
 	//if Drunkard is not fatigued start to dig for nuggets again.
 	if (!pDrunkard->Fatigued())
 	{
-		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
-			<< "Ouah... I don't remember anything from yesterday... "
-			<< "I should go to the saloon and drink some Whisky";
-
-		pDrunkard->GetFSM()->ChangeState(Drink::Instance());
+		pDrunkard->GetFSM()->ChangeState(GoSaloonAndDrinkTilDrunk::Instance());
 	}
 
 	else
 	{
-		//sleep
+		//sleep and sober up
 		pDrunkard->DecreaseFatigue();
+		pDrunkard->DecreaseAlcoholization();
 
-		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "ZZZZ... *Burp* ZZZZ... ";
+		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "ZZZZ... *HIC* ZZZZ... ";
 	}
 }
 
-void GoHomeAndSleepStillRested::Exit(Drunkard* pDrunkard)
+void GoHomeAndSleepIilRested::Exit(Drunkard* pDrunkard)
 {
+	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
+		<< "Ouah... I don't remember anything from yesterday... "
+		<< "I should go to the saloon and drink some Whiskey";
 }
 
-
-bool GoHomeAndSleepStillRested::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
+bool GoHomeAndSleepIilRested::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 {
 	return false; //send message to global message handler
 }
 
-//------------------------------------------------------------------------Drink
+//------------------------------------------------------------------------methods for GoSaloonAndDrinkTilDrunk
 
-Drink* Drink::Instance()
+GoSaloonAndDrinkTilDrunk* GoSaloonAndDrinkTilDrunk::Instance()
 {
-	static Drink instance;
+	static GoSaloonAndDrinkTilDrunk instance;
 
 	return &instance;
 }
 
-void Drink::Enter(Drunkard* pDrunkard)
+void GoSaloonAndDrinkTilDrunk::Enter(Drunkard* pDrunkard)
 {
 	if (pDrunkard->Location() != saloon)
 	{
 		pDrunkard->ChangeLocation(saloon);
 
-		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "Give me a drink ! I'm thursty ! ";
+		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "Give me a drink ! I'm thirsty ! ";
 	}
 }
 
-void Drink::Execute(Drunkard* pDrunkard)
+void GoSaloonAndDrinkTilDrunk::Execute(Drunkard* pDrunkard)
 {
 	pDrunkard->IncreaseAlcoholization();
-	pDrunkard->IncreaseFatigue();
 
 	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "Slurp, that Whisky's really good !";
 
@@ -104,96 +102,121 @@ void Drink::Execute(Drunkard* pDrunkard)
 	}
 }
 
-
-void Drink::Exit(Drunkard* pDrunkard)
+void GoSaloonAndDrinkTilDrunk::Exit(Drunkard* pDrunkard)
 {
-	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "I've... drunk... way... to much... Whisky... *Burp*";
+	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "I've... drunk... way... to much... Whiskey... *HIC!*";
 }
 
-
-bool Drink::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
+bool GoSaloonAndDrinkTilDrunk::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 {
 	//send msg to global message handler
 	return false;
 }
 
 
-//------------------------------------------------------------------------methods for IsDrunk
+//------------------------------------------------------------------------methods for Drunk
 
-IsDrunk* IsDrunk::Instance()
+Drunk* Drunk::Instance()
 {
-	static IsDrunk instance;
+	static Drunk instance;
 
 	return &instance;
 }
 
-void IsDrunk::Enter(Drunkard* pDrunkard)
+void Drunk::Enter(Drunkard* pDrunkard)
 {
+	if (pDrunkard->Location() != saloon)
+	{
+		pDrunkard->ChangeLocation(saloon);
+
+		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "*HIC!* I'm gonna stop drinking a lil' *HIC!* bit";
+	}
+
+	// Let Bob know the drunkard is drunk
+	Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
+		pDrunkard->ID(),        //ID of sender
+		ent_Miner_Bob,          //ID of recipient
+		Msg_DrunkardDrunk,		//the message
+		NO_ADDITIONAL_INFO);
 }
 
-void IsDrunk::Execute(Drunkard* pDrunkard)
+void Drunk::Execute(Drunkard* pDrunkard)
 {
 	pDrunkard->DecreaseAlcoholization();
 	pDrunkard->IncreaseFatigue();
 
-	if (EntityMgr->GetEntityFromID(ent_Miner_Bob)->Location() == saloon )
-	{
-		//say something
-		pDrunkard->GetFSM()->ChangeState(IsBrawling::Instance());
-	} else if(pDrunkard->Fatigued())
+	if(pDrunkard->Fatigued())
 	{
 		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
-			<< "Getting tired... Should sleep...";
+			<< "Getting tired... Should go home and sleep...";
 
-		pDrunkard->GetFSM()->ChangeState(GoHomeAndSleepStillRested::Instance());
+		pDrunkard->GetFSM()->ChangeState(GoHomeAndSleepIilRested::Instance());
 	}
 	else if (pDrunkard->GetAlcoholization()==0)
 	{
 		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
-			<< "Hmmm, am feeling better now, let's take more Whisky !";
+			<< "Hmmm, am feeling better now, let's take some more Whiskey !";
 
-		pDrunkard->GetFSM()->ChangeState(Drink::Instance());
+		pDrunkard->GetFSM()->ChangeState(GoSaloonAndDrinkTilDrunk::Instance());
 	}
 }
 
-void IsDrunk::Exit(Drunkard* pDrunkard)
+void Drunk::Exit(Drunkard* pDrunkard)
 {
 }
 
-
-bool IsDrunk::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
+bool Drunk::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 {
+	SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+
+	switch (msg.Msg)
+	{
+	case Msg_HiDrunkardImAtSaloon:
+
+		cout << "\nMessage handled by " << GetNameOfEntity(pDrunkard->ID())
+			<< " at time: " << Clock->GetCurrentTime();
+
+		SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+
+		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
+			<< "*HIC!* Heya ! I saw ya lookin' at me the wrong way !";
+		pDrunkard->GetFSM()->ChangeState(Brawling::Instance());
+
+		return true;
+	
+	}//end switch
+
 	return false; //send message to global message handler
 }
 
 
 
-//------------------------------------------------------------------------methods for IsBrawling
+//------------------------------------------------------------------------methods for Brawling
 
-IsBrawling* IsBrawling::Instance()
+Brawling* Brawling::Instance()
 {
-	static IsBrawling instance;
+	static Brawling instance;
 
 	return &instance;
 }
 
-void IsBrawling::Enter(Drunkard* pDrunkard)
+void Brawling::Enter(Drunkard* pDrunkard)
 {
 	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
-		<< "Hey yah ! Give me your whisky !";
+		<< "*HIC!* I'ma beat you down now !*HIC!*";
 }
 
-void IsBrawling::Execute(Drunkard* pDrunkard)
+void Brawling::Execute(Drunkard* pDrunkard)
 {
 	//do smth ?
 }
 
-void IsBrawling::Exit(Drunkard* pDrunkard)
+void Brawling::Exit(Drunkard* pDrunkard)
 {
 }
 
 
-bool IsBrawling::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
+bool Brawling::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 {
 	/*SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 
@@ -205,7 +228,7 @@ bool IsBrawling::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 			<< " at time: " << Clock->GetCurrentTime();
 
 		SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
-
+		
 		cout << "\n" << GetNameOfEntity(pDrunkard->ID())
 			<< ": Okay Hun, ahm a comin'!";
 

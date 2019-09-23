@@ -8,14 +8,14 @@ bool Drunkard::HandleMessage(const Telegram& msg)
 
 void Drunkard::Update()
 {
-	SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+	SetTextColor(FOREGROUND_BLUE| FOREGROUND_INTENSITY);
 
 	m_pStateMachine->Update();
 }
 
 
 
-bool Drunkard::Acoholized()const
+bool Drunkard::Alcoholized()const
 {
 	if (m_iAlcoholized >= DrunkLevel) { return true; }
 

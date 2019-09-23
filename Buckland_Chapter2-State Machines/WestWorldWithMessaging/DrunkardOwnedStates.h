@@ -10,20 +10,20 @@ struct Telegram;
 //  Drunkard will go home and sleep until his fatigue is decreased
 //  sufficiently
 //------------------------------------------------------------------------
-class GoHomeAndSleepStillRested : public State<Drunkard>
+class GoHomeAndSleepIilRested : public State<Drunkard>
 {
 private:
 
-	GoHomeAndSleepStillRested(){}
+	GoHomeAndSleepIilRested(){}
 
 	//copy ctor and assignment should be private
-	GoHomeAndSleepStillRested(const GoHomeAndSleepStillRested&);
-	GoHomeAndSleepStillRested& operator=(const GoHomeAndSleepStillRested&);
+	GoHomeAndSleepIilRested(const GoHomeAndSleepIilRested&);
+	GoHomeAndSleepIilRested& operator=(const GoHomeAndSleepIilRested&);
 
 public:
 
 	//this is a singleton
-	static GoHomeAndSleepStillRested* Instance();
+	static GoHomeAndSleepIilRested* Instance();
 
 	virtual void Enter(Drunkard* Drunkard);
 
@@ -39,20 +39,20 @@ public:
 //
 //  Drunkard keeps buying Whiskey until he's drunk. 
 //------------------------------------------------------------------------
-class Drink : public State<Drunkard>
+class GoSaloonAndDrinkTilDrunk : public State<Drunkard>
 {
 private:
 
-	Drink() {}
+	GoSaloonAndDrinkTilDrunk() {}
 
 	//copy ctor and assignment should be private
-	Drink(const Drink&);
-	Drink& operator=(const Drink&);
+	GoSaloonAndDrinkTilDrunk(const GoSaloonAndDrinkTilDrunk&);
+	GoSaloonAndDrinkTilDrunk& operator=(const GoSaloonAndDrinkTilDrunk&);
 
 public:
 
 	//this is a singleton
-	static Drink* Instance();
+	static GoSaloonAndDrinkTilDrunk* Instance();
 
 	virtual void Enter(Drunkard* Drunkard);
 
@@ -68,20 +68,20 @@ public:
 //
 //  Drunkard has drunk too much alcohol and is now drunk
 //------------------------------------------------------------------------
-class IsDrunk : public State<Drunkard>
+class Drunk : public State<Drunkard>
 {
 private:
 
-	IsDrunk() {}
+	Drunk() {}
 
 	//copy ctor and assignment should be private
-	IsDrunk(const IsDrunk&);
-	IsDrunk& operator=(const IsDrunk&);
+	Drunk(const Drunk&);
+	Drunk& operator=(const Drunk&);
 
 public:
 
 	//this is a singleton
-	static IsDrunk* Instance();
+	static Drunk* Instance();
 
 	virtual void Enter(Drunkard* Drunkard);
 
@@ -99,20 +99,20 @@ public:
 //  Drunkard is drunk and Miner Bob is present, he wants to brawl 
 //	because... Eh he's drunk don't expect logical actions !
 //------------------------------------------------------------------------
-class IsBrawling : public State<Drunkard>
+class Brawling : public State<Drunkard>
 {
 private:
 
-	IsBrawling() {}
+	Brawling() {}
 
 	//copy ctor and assignment should be private
-	IsBrawling(const IsDrunk&);
-	IsBrawling& operator=(const IsDrunk&);
+	Brawling(const Brawling&);
+	Brawling& operator=(const Brawling&);
 
 public:
 
 	//this is a singleton
-	static IsBrawling* Instance();
+	static Brawling* Instance();
 
 	virtual void Enter(Drunkard* Drunkard);
 

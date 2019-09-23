@@ -38,7 +38,7 @@ private:
 
 public:
 
-  MinersWife(int id):m_Location(shack),
+  MinersWife(int id):m_Location(MinersShack),
                      m_bCooking(false),
                      BaseGameEntity(id)
                                         
