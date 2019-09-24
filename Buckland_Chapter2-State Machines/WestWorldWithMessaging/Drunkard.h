@@ -68,6 +68,7 @@ public:
 	bool          Fatigued()const;
 	void          DecreaseFatigue() { m_iFatigue -= 1; }
 	void          IncreaseFatigue() { m_iFatigue += 1; }
+	int			  GetFatigueLevel()const { return m_iFatigue; }
 
 	void          DecreaseAlcoholization() { m_iAlcoholized -= 1; }
 	void          IncreaseAlcoholization() { m_iAlcoholized += 1; }

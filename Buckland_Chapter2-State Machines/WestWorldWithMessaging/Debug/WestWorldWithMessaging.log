@@ -1,9 +1,3 @@
 ﻿  cl : Ligne de commande warning D9035 : l'option 'Gm' est déconseillée et sera supprimée dans une version ultérieure
-  MinerOwnedStates.cpp
   DrunkardOwnedStates.cpp
-  Génération de code en cours...
-  Compilation en cours...
-  MinersWifeOwnedStates.cpp
-  MessageDispatcher.cpp
-  Génération de code en cours...
   WestWorldWithMessaging.vcxproj -> D:\Bureau\Cours\UQAC\Projets\WestWorld\Buckland_Chapter2-State Machines\WestWorldWithMessaging\.\Debug\WestWorldWithMessaging.exe

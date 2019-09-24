@@ -9,7 +9,8 @@ enum message_type
   Msg_StewReady,
   Msg_DrunkardDrunk,
   Msg_HiDrunkardImAtSaloon,
-  Msg_LetsFight
+  Msg_LetsFight,
+  Msg_FightRound
 };
 
 
@@ -36,6 +37,10 @@ inline std::string MsgToStr(int msg)
   case 4:
 
 	  return "LetsFight";
+
+  case 5:
+
+	  return "FightRound";
 
   default:
 

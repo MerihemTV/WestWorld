@@ -7,7 +7,6 @@
 #include "MessageTypes.h"
 #include "Time/CrudeTimer.h"
 #include "EntityNames.h"
-#include "EntityManager.h"
 
 #include <iostream>
 using std::cout;
@@ -71,6 +70,8 @@ bool GoHomeAndSleepIilRested::OnMessage(Drunkard* pDrunkard, const Telegram& msg
 	return false; //send message to global message handler
 }
 
+
+
 //------------------------------------------------------------------------methods for GoSaloonAndDrinkTilDrunk
 
 GoSaloonAndDrinkTilDrunk* GoSaloonAndDrinkTilDrunk::Instance()
@@ -93,6 +94,7 @@ void GoSaloonAndDrinkTilDrunk::Enter(Drunkard* pDrunkard)
 void GoSaloonAndDrinkTilDrunk::Execute(Drunkard* pDrunkard)
 {
 	pDrunkard->IncreaseAlcoholization();
+	pDrunkard->IncreaseFatigue();
 
 	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "Slurp, that Whisky's really good !";
 
@@ -112,6 +114,7 @@ bool GoSaloonAndDrinkTilDrunk::OnMessage(Drunkard* pDrunkard, const Telegram& ms
 	//send msg to global message handler
 	return false;
 }
+
 
 
 //------------------------------------------------------------------------methods for Drunk
@@ -167,7 +170,7 @@ void Drunk::Exit(Drunkard* pDrunkard)
 
 bool Drunk::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 {
-	SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	SetTextColor(BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 
 	switch (msg.Msg)
 	{
@@ -176,7 +179,7 @@ bool Drunk::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 		cout << "\nMessage handled by " << GetNameOfEntity(pDrunkard->ID())
 			<< " at time: " << Clock->GetCurrentTime();
 
-		SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+		SetTextColor(FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
 		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
 			<< "*HIC!* Heya ! I saw ya lookin' at me the wrong way !";
@@ -195,7 +198,7 @@ bool Drunk::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 		cout << "\nMessage handled by " << GetNameOfEntity(pDrunkard->ID())
 			<< " at time: " << Clock->GetCurrentTime();
 
-		SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
+		SetTextColor(FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
 		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
 			<< "*HIC!* Heya ! I saw ya lookin' at me the wrong way !";
@@ -227,35 +230,56 @@ void Brawling::Enter(Drunkard* pDrunkard)
 
 void Brawling::Execute(Drunkard* pDrunkard)
 {
-	//do smth ?
+	Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
+		pDrunkard->ID(),        //ID of sender
+		ent_Miner_Bob,          //ID of recipient
+		Msg_FightRound,		//the message
+		(void*)pDrunkard->GetFatigueLevel());
 }
 
 void Brawling::Exit(Drunkard* pDrunkard)
 {
 }
 
-
 bool Brawling::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 {
-	/*SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	SetTextColor(BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 
 	switch (msg.Msg)
 	{
-	case Msg_StewReady:
+	case Msg_FightRound:
 
 		cout << "\nMessage handled by " << GetNameOfEntity(pDrunkard->ID())
 			<< " at time: " << Clock->GetCurrentTime();
 
-		SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
-		
-		cout << "\n" << GetNameOfEntity(pDrunkard->ID())
-			<< ": Okay Hun, ahm a comin'!";
+		SetTextColor(FOREGROUND_BLUE| FOREGROUND_INTENSITY);
 
-		//pDrunkard->GetFSM()->ChangeState(EatStew::Instance());
+		if ((int)msg.ExtraInfo >= pDrunkard->GetFatigueLevel())
+		{
+			// Drunkard won the fight
+			cout << "\n" << GetNameOfEntity(pDrunkard->ID())
+				<< ": Let's grab anotha whiskey to celebrate this easy victory !";
+
+			pDrunkard->GetFSM()->ChangeState(GoSaloonAndDrinkTilDrunk::Instance());
+		}
+		else
+		{
+			// Drunkard lost the fight
+			cout << "\n" << GetNameOfEntity(pDrunkard->ID())
+				<< ": Gosh, my head hurt so much ... Let's go home now.";
+
+			pDrunkard->GetFSM()->ChangeState(GoHomeAndSleepIilRested::Instance());
+		}
+
+		Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
+			pDrunkard->ID(),        //ID of sender
+			ent_Miner_Bob,          //ID of recipient
+			Msg_FightRound,		//the message
+			(void*)pDrunkard->GetFatigueLevel());
 
 		return true;
 
-	}//end switch*/
+	}//end switch
 
 	return false; //send message to global message handler
 }

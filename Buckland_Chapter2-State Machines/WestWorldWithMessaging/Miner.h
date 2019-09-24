@@ -98,6 +98,7 @@ public:
   bool          Fatigued()const;
   void          DecreaseFatigue(){m_iFatigue -= 1;}
   void          IncreaseFatigue(){m_iFatigue += 1;}
+  int		    GetFatigueLevel()const { return m_iFatigue; }
 
   int           Wealth()const{return m_iMoneyInBank;}
   void          SetWealth(int val){m_iMoneyInBank = val;}
