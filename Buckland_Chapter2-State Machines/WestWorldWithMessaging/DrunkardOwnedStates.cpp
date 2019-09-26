@@ -21,14 +21,14 @@ extern std::ofstream os;
 
 //------------------------------------------------------------------------methods for GoHomeAndSleepStillRested
 
-GoHomeAndSleepIilRested* GoHomeAndSleepIilRested::Instance()
+GoHomeAndSleepStillRested* GoHomeAndSleepStillRested::Instance()
 {
-	static GoHomeAndSleepIilRested instance;
+	static GoHomeAndSleepStillRested instance;
 
 	return &instance;
 }
 
-void GoHomeAndSleepIilRested::Enter(Drunkard* pDrunkard)
+void GoHomeAndSleepStillRested::Enter(Drunkard* pDrunkard)
 {
 	if (pDrunkard->Location() != DrunkardsShack)
 	{
@@ -40,32 +40,30 @@ void GoHomeAndSleepIilRested::Enter(Drunkard* pDrunkard)
 	}
 }
 
-void GoHomeAndSleepIilRested::Execute(Drunkard* pDrunkard)
+void GoHomeAndSleepStillRested::Execute(Drunkard* pDrunkard)
 {
-	//if Drunkard is not fatigued start to dig for nuggets again.
-	if (!pDrunkard->Fatigued())
+	if (pDrunkard->GetFatigueLevel()<=0)
 	{
 		pDrunkard->GetFSM()->ChangeState(GoSaloonAndDrinkTilDrunk::Instance());
 	}
 
 	else
 	{
-		//sleep and sober up
-		pDrunkard->DecreaseFatigue();
-		pDrunkard->DecreaseAlcoholization();
+		pDrunkard->DecreaseFatigue(3);
+		pDrunkard->DecreaseAlcoholization(1);
 
 		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "ZZZZ... *HIC* ZZZZ... ";
 	}
 }
 
-void GoHomeAndSleepIilRested::Exit(Drunkard* pDrunkard)
+void GoHomeAndSleepStillRested::Exit(Drunkard* pDrunkard)
 {
 	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
 		<< "Ouah... I don't remember anything from yesterday... "
 		<< "I should go to the saloon and drink some Whiskey";
 }
 
-bool GoHomeAndSleepIilRested::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
+bool GoHomeAndSleepStillRested::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 {
 	return false; //send message to global message handler
 }
@@ -93,10 +91,10 @@ void GoSaloonAndDrinkTilDrunk::Enter(Drunkard* pDrunkard)
 
 void GoSaloonAndDrinkTilDrunk::Execute(Drunkard* pDrunkard)
 {
-	pDrunkard->IncreaseAlcoholization();
-	pDrunkard->IncreaseFatigue();
+	pDrunkard->IncreaseAlcoholization(3);
+	pDrunkard->IncreaseFatigue(1);
 
-	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "Slurp, that Whisky's really good !";
+	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "Slurp, that Whiskey's really good !";
 
 	if (pDrunkard->Alcoholized())
 	{
@@ -145,17 +143,17 @@ void Drunk::Enter(Drunkard* pDrunkard)
 
 void Drunk::Execute(Drunkard* pDrunkard)
 {
-	pDrunkard->DecreaseAlcoholization();
-	pDrunkard->IncreaseFatigue();
-
+	pDrunkard->DecreaseAlcoholization(1);
+	pDrunkard->IncreaseFatigue(1);
+	cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": " << "*HIC*";
 	if(pDrunkard->Fatigued())
 	{
 		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
-			<< "Getting tired... Should go home and sleep...";
+			<< "Getting tired... *HIC* Should go home and sleep...";
 
-		pDrunkard->GetFSM()->ChangeState(GoHomeAndSleepIilRested::Instance());
+		pDrunkard->GetFSM()->ChangeState(GoHomeAndSleepStillRested::Instance());
 	}
-	else if (pDrunkard->GetAlcoholization()==0)
+	else if (pDrunkard->GetAlcoholization()<=0)
 	{
 		cout << "\n" << GetNameOfEntity(pDrunkard->ID()) << ": "
 			<< "Hmmm, am feeling better now, let's take some more Whiskey !";
@@ -254,11 +252,11 @@ bool Brawling::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 
 		SetTextColor(FOREGROUND_BLUE| FOREGROUND_INTENSITY);
 
-		if ((int)msg.ExtraInfo >= pDrunkard->GetFatigueLevel())
+		if ((int)msg.ExtraInfo > pDrunkard->GetFatigueLevel())
 		{
 			// Drunkard won the fight
 			cout << "\n" << GetNameOfEntity(pDrunkard->ID())
-				<< ": Let's grab anotha whiskey to celebrate this easy victory !";
+				<< ": Let's grab anotha Whiskey to celebrate this easy victory !";
 
 			pDrunkard->GetFSM()->ChangeState(GoSaloonAndDrinkTilDrunk::Instance());
 		}
@@ -266,9 +264,9 @@ bool Brawling::OnMessage(Drunkard* pDrunkard, const Telegram& msg)
 		{
 			// Drunkard lost the fight
 			cout << "\n" << GetNameOfEntity(pDrunkard->ID())
-				<< ": Gosh, my head hurt so much ... Let's go home now.";
+				<< ": Stop beating me... Gosh, my head hurt so much ... Let's go home now...";
 
-			pDrunkard->GetFSM()->ChangeState(GoHomeAndSleepIilRested::Instance());
+			pDrunkard->GetFSM()->ChangeState(GoHomeAndSleepStillRested::Instance());
 		}
 
 		Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay

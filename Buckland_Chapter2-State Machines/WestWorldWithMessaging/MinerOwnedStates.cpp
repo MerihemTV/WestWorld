@@ -45,7 +45,7 @@ void EnterMineAndDigForNugget::Execute(Miner* pMiner)
   //Now the miner is at the goldmine he digs for gold until he
   //is carrying in excess of MaxNuggets. If he gets thirsty during
   //his digging he packs up work for a while and changes state to
-  //gp to the saloon for a whiskey.
+  //gp to the saloon for a Whiskey.
   pMiner->AddToGoldCarried(1);
 
   pMiner->IncreaseFatigue();
@@ -247,11 +247,12 @@ void QuenchThirst::Execute(Miner* pMiner)
   cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "That's mighty fine sippin' liquer";
 
   pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());  
+  cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Leaving the saloon";
 }
 
 void QuenchThirst::Exit(Miner* pMiner)
 { 
-  cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Leaving the saloon, feelin' good";
+  
 }
 
 bool QuenchThirst::OnMessage(Miner* pMiner, const Telegram& msg)
@@ -380,6 +381,7 @@ bool Fighting::OnMessage(Miner* pMiner, const Telegram& msg)
 			// Miner won the fight
 			cout << "\n" << GetNameOfEntity(pMiner->ID())
 				<< ": Told'ya not to mess with me !";
+			cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Let's drink again to celebrate this easy victory !";
 
 			pMiner->GetFSM()->ChangeState(QuenchThirst::Instance());
 		}
@@ -388,7 +390,7 @@ bool Fighting::OnMessage(Miner* pMiner, const Telegram& msg)
 			// Miner lost the fight
 			cout << "\n" << GetNameOfEntity(pMiner->ID())
 				<< ": Can't believe I lost 'gainst someone of ya kind !";
-
+			cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Leaving the saloon";
 			pMiner->GetFSM()->ChangeState(GoHomeAndSleepTilRested::Instance());
 		}
 

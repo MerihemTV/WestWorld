@@ -19,7 +19,37 @@ int main()
 #ifdef TEXTOUTPUT
   os.open("output.txt");
 #endif
-
+  bool initOk = false; 
+  int chosenState;
+  std::cout << "Choose original drunkard state by pressing the right key : " << std::endl
+	  << "A : GoHomeAndSleepStillRested" << std::endl
+	  << "Z : GoSaloonAndDrinkTilDrunk" << std::endl
+	  << "E : Drunk" << std::endl
+	  /*<< "R : Brawling" << std::endl*/;
+  while (!initOk)
+  {
+	  if (GetKeyState('A'))
+	  {
+		  chosenState = 0;
+		  initOk = true;
+	  }
+	  if (GetKeyState('Z') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+	  {
+		  chosenState = 1;
+		  initOk = true;
+	  }
+	  if (GetKeyState('E') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+	  {
+		  chosenState = 2;
+		  initOk = true;
+	  }
+	  if (GetKeyState('R') & 0x8000/*Check if high-order bit is set (1 << 15)*/)
+	  {
+		  chosenState = 3;
+		  initOk = true;
+	  }
+  }
+  
   //seed random number generator
   srand((unsigned) time(NULL));
 
@@ -28,9 +58,9 @@ int main()
 
   //create his wife
   MinersWife* Elsa = new MinersWife(ent_Elsa);
-
+  
   //create a drunkard
-  Drunkard* drunkard = new Drunkard(ent_Drunkard);
+  Drunkard* drunkard = new Drunkard(ent_Drunkard, chosenState);
 
   //register them with the entity manager
   EntityMgr->RegisterEntity(Bob);
@@ -48,6 +78,7 @@ int main()
     Dispatch->DispatchDelayedMessages();
 
     Sleep(800);
+	std::cout << std::endl;
   }
 
   //tidy up

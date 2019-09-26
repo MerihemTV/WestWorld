@@ -53,7 +53,7 @@ private:
   //above this value a miner is thirsty
   const int ThirstLevel = 5;
   //above this value a miner is sleepy
-  const int TirednessThreshold = 5;
+  const int TirednessThreshold = 7;
 
 public:
 

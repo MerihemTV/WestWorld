@@ -10,20 +10,20 @@ struct Telegram;
 //  Drunkard will go home and sleep until his fatigue is decreased
 //  sufficiently
 //------------------------------------------------------------------------
-class GoHomeAndSleepIilRested : public State<Drunkard>
+class GoHomeAndSleepStillRested : public State<Drunkard>
 {
 private:
 
-	GoHomeAndSleepIilRested(){}
+	GoHomeAndSleepStillRested(){}
 
 	//copy ctor and assignment should be private
-	GoHomeAndSleepIilRested(const GoHomeAndSleepIilRested&);
-	GoHomeAndSleepIilRested& operator=(const GoHomeAndSleepIilRested&);
+	GoHomeAndSleepStillRested(const GoHomeAndSleepStillRested&);
+	GoHomeAndSleepStillRested& operator=(const GoHomeAndSleepStillRested&);
 
 public:
 
 	//this is a singleton
-	static GoHomeAndSleepIilRested* Instance();
+	static GoHomeAndSleepStillRested* Instance();
 
 	virtual void Enter(Drunkard* Drunkard);
 

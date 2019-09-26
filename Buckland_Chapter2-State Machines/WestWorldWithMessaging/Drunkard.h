@@ -31,23 +31,39 @@ private:
 	int                   m_iFatigue;
 
 	//above this value the drunkard is drunk
-	const int DrunkLevel = 5;
+	const int DrunkLevel = 10;
 
 	//above this value a drunkard is sleepy
-	const int TirednessThreshold = 5;
+	const int TirednessThreshold = 10;
 
 public:
 
-	Drunkard(int id) :m_Location(DrunkardsShack),
-		m_iAlcoholized(0),
+	Drunkard(int id, int state) :m_Location(DrunkardsShack),
 		m_iFatigue(0),
 		BaseGameEntity(id)
 
 	{
 		//set up state machine
 		m_pStateMachine = new StateMachine<Drunkard>(this);
-
-		m_pStateMachine->SetCurrentState(GoHomeAndSleepIilRested::Instance());
+		switch (state)
+		{
+		case 0:
+			m_pStateMachine->SetCurrentState(GoHomeAndSleepStillRested::Instance());
+			m_iAlcoholized = 0;
+			break;
+		case 1:
+			m_pStateMachine->SetCurrentState(GoSaloonAndDrinkTilDrunk::Instance());
+			m_iAlcoholized = 0;
+			break;
+		case 2:
+			m_pStateMachine->SetCurrentState(Drunk::Instance());
+			m_iAlcoholized = DrunkLevel;
+			break;
+		/*case 3:
+			m_pStateMachine->SetCurrentState(Brawling::Instance());
+			m_iAlcoholized = DrunkLevel;
+			break;*/
+		}
 	}
 
 	~Drunkard() { delete m_pStateMachine; }
@@ -66,12 +82,18 @@ public:
 	void          ChangeLocation(location_type loc) { m_Location = loc; }
 
 	bool          Fatigued()const;
-	void          DecreaseFatigue() { m_iFatigue -= 1; }
-	void          IncreaseFatigue() { m_iFatigue += 1; }
+	void          DecreaseFatigue(int fatigueDecrease)
+	{ 
+		m_iFatigue = max(m_iFatigue- fatigueDecrease,0);
+	}
+	void          IncreaseFatigue(int fatigueDecrease) { m_iFatigue += fatigueDecrease; }
 	int			  GetFatigueLevel()const { return m_iFatigue; }
 
-	void          DecreaseAlcoholization() { m_iAlcoholized -= 1; }
-	void          IncreaseAlcoholization() { m_iAlcoholized += 1; }
+	void          DecreaseAlcoholization(int alcoholizationDecrease)
+	{ 
+		 m_iAlcoholized = max(m_iAlcoholized - alcoholizationDecrease, 0);
+	}
+	void          IncreaseAlcoholization(int alcoholizationDecrease) { m_iAlcoholized += alcoholizationDecrease; }
 	bool          Alcoholized()const;
 	int			  GetAlcoholization()const { return m_iAlcoholized; };
 

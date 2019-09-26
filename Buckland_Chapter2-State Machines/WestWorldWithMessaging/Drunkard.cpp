@@ -17,7 +17,7 @@ void Drunkard::Update()
 
 bool Drunkard::Alcoholized()const
 {
-	if (m_iAlcoholized >= DrunkLevel) { return true; }
+	if (m_iAlcoholized > DrunkLevel) { return true; }
 
 	return false;
 }
